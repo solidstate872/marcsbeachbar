@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Marc's Beach Bar</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: black;
+    }
+
+    .video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(0,0,0,0.3) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.3) 1px, transparent 1px);
+      background-size: 5px 5px;
+    }
+
+    /* Speaker Icon Styling */
+    #soundBtn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 34px;
+      height: 34px;
+      z-index: 3;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    #soundBtn.visible {
+      opacity: 0.9;
+    }
+
+    #soundBtn:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="video-container">
+    <video id="videoPlayer" autoplay loop muted>
+      <source src="marcsbeachbar.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="grid-overlay"></div>
+
+  <!-- Clean Minimal Speaker Icon (toggles muted/unmuted) -->
+  <svg id="soundBtn" viewBox="0 0 24 24" fill="white">
+    <path id="iconSpeaker" d="M3 9v6h4l5 5V4l-5 5H3z"/>
+    <path id="iconWave" d="M14 9.23v5.54c1.17-.64 2-1.86 2-2.77s-.83-2.13-2-2.77z"/>
+  </svg>
+
+  <script>
+    const video = document.getElementById("videoPlayer");
+    const soundBtn = document.getElementById("soundBtn");
+    const iconWave = document.getElementById("iconWave");
+
+    let hideTimeout;
+
+    function showSoundIcon() {
+      soundBtn.classList.add("visible");
+
+      clearTimeout(hideTimeout);
+
+      hideTimeout = setTimeout(() => {
+        soundBtn.classList.remove("visible");
+      }, 2000);
+    }
+
+    function toggleSound() {
+      video.muted = !video.muted;
+
+      // Show wave or hide wave depending on mute state
+      iconWave.style.display = video.muted ? "none" : "block";
+
+      video.play();
+      showSoundIcon();
+    }
+
+    // Show icon on any interaction
+    ["click", "mousemove", "keydown", "touchstart"].forEach(eventType => {
+      document.addEventListener(eventType, showSoundIcon);
+    });
+
+    // Clicking the icon toggles sound
+    soundBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // so clicking icon doesn't count as a page click
+      toggleSound();
+    });
+
+    // Show icon for the first 2 seconds when page loads
+    showSoundIcon();
+  </script>
+
+</body>
+</html>
